@@ -8,5 +8,6 @@ set cpo&vim
 " command! -range Foo lua require('scratch').foo()
 command! -nargs=* ScratchNew lua require('scratch').create(<f-args>)
 command! -nargs=* ScratchOpen lua require('scratch').open(<f-args>)
+command! ScratchFind lua require('scratch').find()
 
 let g:loaded_template = 1

@@ -1,7 +1,9 @@
 local M = {}
 local opts = {}
 local default_opts = {
-	dir = "$HOME/.local/share/scratch/"
+	dir = "$HOME/.local/share/scratch/",
+	find_prompt_icon = "",
+	find_prompt_text = "Find Scratch File",
 }
 
 local fio = require("scratch.file_io")
@@ -60,6 +62,23 @@ function M.open(name)
 		name = opts.dir .. fio.read_file(opts.dir .. ".last")
 	end
 	vim.cmd("e " .. name)
+end
+
+function M.find()
+	local ok, tl = pcall(require, "telescope.builtin")
+	if not ok then
+		vim.api.nvim_err_writeln("telescope not installed")
+		return
+	end
+	local pt = opts.find_prompt_text
+	if opts.find_prompt_icon ~= "" then
+		pt = opts.find_prompt_icon .. " " .. pt
+	end
+	tl.find_files({
+		prompt_title = pt,
+		path_dispaly = { "smart" },
+		cwd = opts.dir
+	})
 end
 
 return M
