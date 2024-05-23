@@ -1,9 +1,10 @@
 local M = {}
 local opts = {}
-
 local default_opts = {
-	dir = vim.fn.getenv("HOME") .. "/.local/share/scratch/"
+	dir = "$HOME/.local/share/scratch/"
 }
+
+local fio = require("scratch.file_io")
 
 local function getSelection()
 	local block = vim.fn.visualmode() == ""
@@ -38,7 +39,27 @@ end
 
 function M.setup(user_opts)
 	opts = vim.tbl_deep_extend("force", default_opts, user_opts)
-	print(opts)
+	opts.dir = vim.fn.expand(opts.dir)
+
+	fio.mkdir(opts.dir)
+end
+
+function M.create(name)
+	if not name then
+		vim.ui.input({ prompt = "File Name" }, function(input)
+			M.create(input)
+		end)
+	else
+		fio.write_file(opts.dir .. ".last", name)
+		vim.cmd("e " .. opts.dir .. name)
+	end
+end
+
+function M.open(name)
+	if not name then
+		name = opts.dir .. fio.read_file(opts.dir .. ".last")
+	end
+	vim.cmd("e " .. name)
 end
 
 return M
