@@ -1,4 +1,9 @@
 local M = {}
+local opts = {}
+
+local default_opts = {
+	dir = vim.fn.getenv("HOME") .. "/.local/share/scratch/"
+}
 
 local function getSelection()
 	local block = vim.fn.visualmode() == ""
@@ -31,20 +36,9 @@ local function getSelection()
 	}
 end
 
-local function writeLines(selection)
-	for i, l in ipairs(selection.lines) do
-		local row = selection.startRow + i - 1
-		local rowStr = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1]
-		local rowFront = string.sub(rowStr, 1, selection.startCol)
-		local rowEnd = string.sub(rowStr, selection.endCol + 1)
-		vim.api.nvim_buf_set_lines(0, row, row + 1, false, { rowFront .. l .. rowEnd })
-	end
-end
-
-function M.foo()
-end
-
-function M.bar()
+function M.setup(user_opts)
+	opts = vim.tbl_deep_extend("force", default_opts, user_opts)
+	print(opts)
 end
 
 return M
