@@ -41,7 +41,7 @@ end
 
 function M.setup(user_opts)
 	opts = vim.tbl_deep_extend("force", default_opts, user_opts)
-	opts.dir = vim.fn.expand(opts.dir)
+	opts.dir = vim.fs.normalize(opts.dir)
 
 	fio.mkdir(opts.dir)
 end
@@ -51,15 +51,15 @@ function M.create(name)
 		vim.ui.input({ prompt = "File Name" }, function(input)
 			M.create(input)
 		end)
-	else
-		fio.write_file(opts.dir .. ".last", name)
-		vim.cmd("e " .. opts.dir .. name)
+		return
 	end
+	fio.write_file(vim.fs.joinpath(opts.dir, ".last"), name)
+	vim.cmd("e " .. vim.fs.joinpath(opts.dir, name))
 end
 
 function M.open(name)
 	if not name then
-		name = opts.dir .. fio.read_file(opts.dir .. ".last")
+		name = vim.fs.joinpath(opts.dir, fio.read_file(opts.dir .. ".last"))
 	end
 	vim.cmd("e " .. name)
 end
